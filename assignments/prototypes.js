@@ -69,7 +69,9 @@ function Humanoid(attributes) {
   CharacterStats.call(this, attributes)
   this.team = attributes.team,
   this.weapons = attributes.weapons,
-  this.language = attributes.language
+  this.language = attributes.language,
+  this.attackPoints = attributes.attackPoints,
+  this.opponent = attributes.opponent
 }
 //Inherit prototype functions from CharacterStats object
 Humanoid.prototype = Object.create(CharacterStats.prototype)
@@ -80,9 +82,7 @@ Humanoid.prototype.greet = function () {
 }
 
 
-// Test your work by un-commenting these 3 objects and the list of console logs below:
-
-
+// Test your work by un-commenting these 3 objects and the list of console logs below
   const mage = new Humanoid({
     createdAt: new Date(),
     dimensions: {
@@ -149,3 +149,75 @@ Humanoid.prototype.greet = function () {
   // * Create Villain and Hero constructor functions that inherit from the Humanoid constructor function.  
   // * Give the Hero and Villains different methods that could be used to remove health points from objects which could result in destruction if health gets to 0 or drops below 0;
   // * Create two new objects, one a villain and one a hero and fight it out with methods!
+
+//Add an attack method
+Humanoid.prototype.attack = function (opponent) {
+  opponent.healthPoints = opponent.healthPoints - this.attackPoints
+  if (damage === 0) {
+    opponent.destroy()
+  }
+}
+
+function Villain (attributes) {
+  Humanoid.call(this, attributes)
+  this.affliation = 'Villian'
+}
+
+Villain.prototype = Object.create(Humanoid.prototype)
+Villain.prototype.warCry = function () {
+  return `${this.affliation}s will conquer the world!`
+}
+
+function Hero (attributes) {
+  Humanoid.call(this, attributes)
+  this.affliation = 'Hero'
+}
+
+Hero.prototype = Object.create(Humanoid.prototype)
+Hero.prototype.battleCry = function () {
+  return `${this.affliation}es will save the world, YO JOE!!!`
+}
+
+const sorcerer = new Villain({
+  createdAt: new Date(),
+  dimensions: {
+    length: 2,
+    width: 1,
+    height: 1,
+  },
+  healthPoints: 5,
+  name: 'Raistlin',
+  team: 'Wizard of High Sorcery',
+  weapons: [
+    'Staff of Magius',
+  ],
+  language: 'Common Tongue',
+  attackPoints: 2
+});
+
+const warrior = new Hero({
+  createdAt: new Date(),
+  dimensions: {
+    length: 2,
+    width: 2,
+    height: 2,
+  },
+  healthPoints: 15,
+  name: 'Caramon',
+  team: 'Heroes of the Lance',
+  weapons: [
+    'Giant Sword',
+    'Shield',
+  ],
+  language: 'Common Tongue',
+  attackPoints: 3
+});
+
+//Background story
+function backStory (character) {
+  return `${character.name} is a ${character.affliation} and member of the ${character.team}.`
+}
+console.log(backStory(sorcerer))
+console.log(backStory(warrior))
+
+  
