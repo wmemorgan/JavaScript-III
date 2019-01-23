@@ -72,7 +72,6 @@ function Humanoid(attributes) {
   this.language = attributes.language,
   this.attackPoints = attributes.attackPoints,
   this.specialAttack = attributes.specialAttack
-  this.opponent = attributes.opponent
 }
 //Inherit prototype functions from CharacterStats object
 Humanoid.prototype = Object.create(CharacterStats.prototype)
@@ -162,7 +161,7 @@ Humanoid.prototype.greet = function () {
 */
 function Villain (attributes) {
   Humanoid.call(this, attributes)
-  this.affliation = 'Villian'
+  this.affliation = 'Villain'
 }
 
 Villain.prototype = Object.create(Humanoid.prototype)
@@ -172,12 +171,6 @@ Villain.prototype.warCry = function () {
 //Add an attack method
 Villain.prototype.fireballThrow = function (opponent) {
   opponent.healthPoints = opponent.healthPoints - this.attackPoints
-  if (opponent.healthPoints <= 0) {
-    opponent.destroy()
-    return `${this.name} shouts \"${this.warCry()}\" ${opponent.name} has been defeated!`
-  } else {
-    return `${this.name} shouts \"${this.warCry()}\" ${this.name} uses ${this.specialAttack} to attack ${opponent.name}. Leaving him with ${opponent.healthPoints} health points.`
-  }
 }
 
 /*
@@ -201,12 +194,6 @@ Hero.prototype.battleCry = function () {
 //Add an attack method
 Hero.prototype.swordStrike = function (opponent) {
   opponent.healthPoints = opponent.healthPoints - this.attackPoints
-  if (opponent.healthPoints <= 0) {
-    opponent.destroy()
-    return `${this.name} shouts \"${this.battleCry()}\" ${opponent.name} has been defeated!`
-  } else {
-    return `${this.name} shouts \"${this.battleCry()}\" ${this.name} uses ${this.specialAttack} to attack ${opponent.name}. Leaving him with ${opponent.healthPoints} health points.`
-  }
 }
 
 const sorcerer = new Villain({
@@ -248,17 +235,38 @@ const warrior = new Hero({
 
 //Background story
 function backStory (character) {
-  return `${character.name} is a ${character.affliation} and member of the ${character.team}.`
+  return `${character.name}, a ${character.affliation} and member of the \"${character.team}\"`
 }
-console.log(backStory(sorcerer))
-console.log(`His motto is: \"${sorcerer.warCry()}\"`)
-console.log(backStory(warrior))
-console.log(`His motto is: \"${warrior.battleCry()}\"`)
+console.log(`We begin our journey with ${backStory(sorcerer)}; and with ${backStory(warrior)}.`)
 
 //Battle Sequence
-console.log(sorcerer.fireballThrow(warrior))
-console.log(warrior.swordStrike(sorcerer))
-console.log(warrior.swordStrike(sorcerer))
+function combat (character, opponent) {
+  // Choose character attack
+  function attack () {
+    if (character.affliation === 'Villain') {
+      character.fireballThrow(opponent)
+    } else {
+      character.swordStrike(opponent)
+    }
+  }
+
+  // Execute attack
+  let motto = character.affliation === 'Villain' ? character.warCry() : character.battleCry()
+  attack()
+
+  // Show combat play by play and battle status
+  if (opponent.healthPoints <= 0) {
+    opponent.destroy()
+    return `${character.name} shouts \"${motto}\" ${character.name} uses ${character.specialAttack} to defeat ${opponent.name}!`
+  } else {
+    return `${character.name} shouts \"${motto}\" ${character.name} uses ${character.specialAttack} to attack ${opponent.name}. Leaving him with ${opponent.healthPoints} health points.`
+  }
+}
+
+console.log(combat(sorcerer, warrior))
+console.log(combat(warrior, sorcerer))
+console.log(combat(warrior, sorcerer))
+
 
 
 
