@@ -256,8 +256,7 @@ function combat (character, opponent) {
 
   // Show combat play by play and battle status
   if (opponent.healthPoints <= 0) {
-    opponent.destroy()
-    return `${character.name} shouts \"${motto}\" ${character.name} uses ${character.specialAttack} to defeat ${opponent.name}!`
+    return `${character.name} shouts \"${motto}\" ${character.name} uses ${character.specialAttack} to defeat ${opponent.name}! ${opponent.destroy()}`
   } else {
     return `${character.name} shouts \"${motto}\" ${character.name} uses ${character.specialAttack} to attack ${opponent.name}. Leaving him with ${opponent.healthPoints} health points.`
   }
