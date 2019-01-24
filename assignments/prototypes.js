@@ -15,6 +15,16 @@
   * destroy() // prototype method -> returns the string: 'Object was removed from the game.'
 */
 
+function GameObject(attributes) {
+  this.createdAt = attributes.createdAt,
+  this.dimensions = attributes.dimensions
+}
+
+GameObject.prototype.destroy = function () {
+  return `${this.name} was removed from the game.`
+}
+
+
 /*
   === CharacterStats ===
   * healthPoints
@@ -22,6 +32,22 @@
   * takeDamage() // prototype method -> returns the string '<object name> took damage.'
   * should inherit destroy() from GameObject's prototype
 */
+
+function CharacterStats (attributes) {
+  //Inherit GameObject attributes
+  GameObject.call(this, attributes)
+  this.healthPoints = attributes.healthPoints,
+  this.name = attributes.name
+}
+
+//Inherit GameObject prototypes
+CharacterStats.prototype = Object.create(GameObject.prototype)
+
+//Create a new prototype function
+CharacterStats.prototype.takeDamage = function () {
+  return `${this.name} took damage.`
+}
+
 
 /*
   === Humanoid (Having an appearance or character resembling that of a human.) ===
@@ -39,9 +65,24 @@
   * Instances of CharacterStats should have all of the same properties as GameObject.
 */
 
-// Test you work by un-commenting these 3 objects and the list of console logs below:
+function Humanoid(attributes) {
+  CharacterStats.call(this, attributes)
+  this.team = attributes.team,
+  this.weapons = attributes.weapons,
+  this.language = attributes.language,
+  this.attackPoints = attributes.attackPoints,
+  this.specialAttack = attributes.specialAttack
+}
+//Inherit prototype functions from CharacterStats object
+Humanoid.prototype = Object.create(CharacterStats.prototype)
 
-/*
+//Add prototype function
+Humanoid.prototype.greet = function () {
+  return `${this.name} offers a greeting in ${this.language}.`
+}
+
+
+// Test your work by un-commenting these 3 objects and the list of console logs below
   const mage = new Humanoid({
     createdAt: new Date(),
     dimensions: {
@@ -102,9 +143,130 @@
   console.log(archer.greet()); // Lilith offers a greeting in Elvish.
   console.log(mage.takeDamage()); // Bruce took damage.
   console.log(swordsman.destroy()); // Sir Mustachio was removed from the game.
-*/
+
 
   // Stretch task: 
   // * Create Villain and Hero constructor functions that inherit from the Humanoid constructor function.  
   // * Give the Hero and Villains different methods that could be used to remove health points from objects which could result in destruction if health gets to 0 or drops below 0;
   // * Create two new objects, one a villain and one a hero and fight it out with methods!
+
+/*
+  === Villain ===
+  Attributes:
+  * affliation: 'Villain
+
+ Prototype Functions:
+  * warCry()
+  * fireballThrow()
+*/
+function Villain (attributes) {
+  Humanoid.call(this, attributes)
+  this.affliation = 'Villain'
+}
+
+Villain.prototype = Object.create(Humanoid.prototype)
+Villain.prototype.warCry = function () {
+  return `${this.affliation}s will conquer the world!`
+}
+//Add an attack method
+Villain.prototype.fireballThrow = function (opponent) {
+  opponent.healthPoints = opponent.healthPoints - this.attackPoints
+}
+
+/*
+  === Hero ===
+  Attributes:
+  * affliation: 'Hero'
+
+ Prototype Functions:
+  * battleCry()
+  * swordStrike()
+*/
+function Hero (attributes) {
+  Humanoid.call(this, attributes)
+  this.affliation = 'Hero'
+}
+
+Hero.prototype = Object.create(Humanoid.prototype)
+Hero.prototype.battleCry = function () {
+  return `${this.affliation}es will save the world, YO JOE!!!`
+}
+//Add an attack method
+Hero.prototype.swordStrike = function (opponent) {
+  opponent.healthPoints = opponent.healthPoints - this.attackPoints
+}
+
+const sorcerer = new Villain({
+  createdAt: new Date(),
+  dimensions: {
+    length: 2,
+    width: 1,
+    height: 1,
+  },
+  healthPoints: 5,
+  name: 'Raistlin',
+  team: 'Wizard of High Sorcery',
+  weapons: [
+    'Staff of Magius',
+  ],
+  language: 'Common Tongue',
+  attackPoints: 2,
+  specialAttack: 'fireball spell'
+});
+
+const warrior = new Hero({
+  createdAt: new Date(),
+  dimensions: {
+    length: 2,
+    width: 2,
+    height: 2,
+  },
+  healthPoints: 15,
+  name: 'Caramon',
+  team: 'Heroes of the Lance',
+  weapons: [
+    'Giant Sword',
+    'Shield',
+  ],
+  language: 'Common Tongue',
+  attackPoints: 3,
+  specialAttack: 'sword strikes'
+});
+
+//Background story
+function backStory (character) {
+  return `${character.name}, a ${character.affliation} and member of the \"${character.team}\"`
+}
+console.log(`We begin our journey with ${backStory(sorcerer)}; and with ${backStory(warrior)}.`)
+
+//Battle Sequence
+function combat (character, opponent) {
+  // Choose character attack
+  function attack () {
+    if (character.affliation === 'Villain') {
+      character.fireballThrow(opponent)
+    } else {
+      character.swordStrike(opponent)
+    }
+  }
+
+  // Execute attack
+  let motto = character.affliation === 'Villain' ? character.warCry() : character.battleCry()
+  attack()
+
+  // Show combat play by play and battle status
+  if (opponent.healthPoints <= 0) {
+    return `${character.name} shouts \"${motto}\" ${character.name} uses ${character.specialAttack} to defeat ${opponent.name}! ${opponent.destroy()}`
+  } else {
+    return `${character.name} shouts \"${motto}\" ${character.name} uses ${character.specialAttack} to attack ${opponent.name}. Leaving him with ${opponent.healthPoints} health points.`
+  }
+}
+
+console.log(combat(sorcerer, warrior))
+console.log(combat(warrior, sorcerer))
+console.log(combat(warrior, sorcerer))
+
+
+
+
+  
